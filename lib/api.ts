@@ -2,19 +2,21 @@ import { FileHashes, FilePresence, ModLoader } from "./types.ts";
 
 const BASE = "https://api.modrinth.com/v2";
 
-export async function latest(game: string, loader: ModLoader) {
+export async function latest(game: string, loader: ModLoader): Promise<string> {
   if (loader === ModLoader.Forge) {
     const data = await fetch(
       "https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json",
     ).then((r) => r.json());
     return data["promos"][`${game}-recommended`] || data["promos"][`${game}-latest`];
-  }
-
-  if (ModLoader.Fabric) {
+  } else if (loader === ModLoader.Fabric) {
     const data = await fetch(`https://meta.fabricmc.net/v2/versions/loader/${game}`)
       .then((r) => r.json());
     return data[0]["loader"]["version"];
   }
+
+  throw new Error(
+    `Automatic latest version for ${loader} not yet implemented. Please specify a version manually.`,
+  );
 }
 
 export function rawLoader(loader: ModLoader) {

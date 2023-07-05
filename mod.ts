@@ -2,7 +2,7 @@ import { getFiles, latest, rawLoader } from "./lib/api.ts";
 import { ModLoader, ModrinthFile, ModrinthPack } from "./lib/types.ts";
 
 export { ModLoader } from "./lib/types.ts";
-export type { ModrinthFile } from "./lib/types.ts";
+export type { ModrinthFile, ModrinthPack } from "./lib/types.ts";
 
 export interface CreateModpackOptions {
   name: string;

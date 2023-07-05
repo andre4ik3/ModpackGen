@@ -13,7 +13,7 @@ A cool library for dynamically generating Modrinth packs.
 This will generate a Modrinth file with the latest mod versions for the latest Forge on 1.20.1:
 
 ```ts
-import { createModpack, ModLoader } from "./mod.ts";
+import { createModpack, ModLoader } from "https://deno.land/x/mrpack/mod.ts";
 
 const pack = await createModpack({
   name: "Test Modpack",
