@@ -39,7 +39,7 @@ export async function createModpack(opts: CreateModpackOptions) {
     files: [...modFiles, ...(opts.extraFiles || [])],
     dependencies: {
       minecraft: opts.gameVersion,
-      [opts.loader]: opts.loaderVersion || latest(opts.gameVersion, opts.loader),
+      [opts.loader]: opts.loaderVersion || await latest(opts.gameVersion, opts.loader),
     },
   };
 

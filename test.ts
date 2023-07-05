@@ -5,7 +5,6 @@ const pack = await createModpack({
   version: "1.0",
   gameVersion: "1.20.1",
   loader: ModLoader.Forge,
-  loaderVersion: "47.0.43",
   mods: [
     "create",
     "entityculling",
