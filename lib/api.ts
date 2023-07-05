@@ -86,15 +86,25 @@ export type ModFile = {
   server: FilePresence;
 };
 
+async function fetchWithCache(request: RequestInfo | URL): Promise<Response> {
+  const cache = await caches.open("mrpack");
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  const resp = await fetch(request);
+  if (resp.ok) await cache.put(request, resp.clone());
+  return resp;
+}
+
 export async function fetchProject(id: string) {
-  const resp = await fetch(`${BASE}/project/${id}`);
+  const resp = await fetchWithCache(`${BASE}/project/${id}`);
   if (!resp.ok) throw new Error(`error while fetching project ${id}: ${resp.status}`);
   const data: GetProjectResponse = await resp.json();
   return data;
 }
 
 export async function fetchVersion(id: string) {
-  const resp = await fetch(`${BASE}/version/${id}`);
+  const resp = await fetchWithCache(`${BASE}/version/${id}`);
   if (!resp.ok) throw new Error(`error while fetching version ${id}: ${resp.status}`);
   const data: GetVersionResponse = await resp.json();
   return data;
