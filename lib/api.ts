@@ -88,14 +88,14 @@ export type ModFile = {
 
 export async function fetchProject(id: string) {
   const resp = await fetch(`${BASE}/project/${id}`);
-  if (!resp.ok) throw new Error(`error while fetching project: ${resp.status}`);
+  if (!resp.ok) throw new Error(`error while fetching project ${id}: ${resp.status}`);
   const data: GetProjectResponse = await resp.json();
   return data;
 }
 
 export async function fetchVersion(id: string) {
   const resp = await fetch(`${BASE}/version/${id}`);
-  if (!resp.ok) throw new Error(`error while fetching version: ${resp.status}`);
+  if (!resp.ok) throw new Error(`error while fetching version ${id}: ${resp.status}`);
   const data: GetVersionResponse = await resp.json();
   return data;
 }
@@ -107,9 +107,9 @@ export async function getFiles(
 ): Promise<ModFile[]> {
   const project = await fetchProject(mod);
   if (!project.game_versions.includes(gameVersion)) {
-    throw new Error(`Mod ${project.title} (${project.slug}) is not compatible with ${gameVersion}`);
+    throw new Error(`${project.title} (${project.slug}) is not compatible with ${gameVersion}`);
   } else if (!project.loaders.includes(loader)) {
-    throw new Error(`Mod ${project.title} (${project.slug}) is not compatible with ${loader}`);
+    throw new Error(`${project.title} (${project.slug}) is not compatible with ${loader}`);
   }
 
   for (const versionId of project.versions.reverse()) {
@@ -127,10 +127,13 @@ export async function getFiles(
         .map((dep) => getFiles(dep.project_id, gameVersion, loader)),
     );
 
-    return [
-      { file, client: project.client_side, server: project.server_side },
-      ...dependencies.flat(),
-    ];
+    // TODO: Add support for optional and dedicated server only mods.
+    const client = FilePresence.Required;
+    const server = project.server_side !== "unsupported"
+      ? FilePresence.Required
+      : FilePresence.Unsupported;
+
+    return [{ file, client, server }, ...dependencies.flat()];
   }
 
   throw new Error(`Failed to find a suitable version of ${project.title} (${project.slug})`);
